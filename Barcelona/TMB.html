@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Real-Time Bus Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>#map { height: 100vh; }</style>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+</head>
+<body>
+<div id="map"></div>
+<script>
+    var map = L.map('map').setView([41.3851, 2.1734], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Placeholder for fetching and adding real-time bus stop data
+    async function fetchBusStops() {
+        const appId = 'YOUR_TMB_APP_ID'; //YOUR_TMB_APP_ID
+        const appKey = 'YOUR_TMB_APP_KEY';//YOUR_TMB_APP_KEY
+        // Example URL, replace with actual endpoint and parameters
+        const url = `https://api.tmb.cat/v1/ibus/stops/your_stop_id?app_id=${appId}&app_key=${appKey}`;
+
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            // Process and display the data on the map
+        } catch (error) {
+            console.error('Error fetching TMB API data:', error);
+        }
+    }
+
+    fetchBusStops();
+</script>
+</body>
+</html>

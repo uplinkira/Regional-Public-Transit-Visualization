@@ -1,0 +1,57 @@
+<!-- This code demonstrates how to create an interactive map that can display static and real-time data regarding bus stops and lines. It leverages the Leaflet library for map rendering, uses asynchronous JavaScript for data fetching, and incorporates best practices for responsive web design and API data integration.此代码演示了如何创建一个交互式地图，该地图可以显示有关公交车站和线路的静态和实时数据。它利用 Leaflet 库进行地图渲染，使用异步 JavaScript 进行数据获取，并结合了响应式网页设计和 API 数据集成的最佳实践。 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bus Stops and Lines Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        #map { height: 100vh; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        var map = L.map('map').setView([41.3851, 2.1734], 13); // Barcelona coordinates
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Load and add the static JSON data for stops and real bus line stops to the map
+        async function loadStaticData(filePath) {
+            const response = await fetch(filePath);
+            const data = await response.json();
+
+            L.geoJSON(data, {
+                onEachFeature: function (feature, layer) {
+                    layer.bindPopup(feature.properties.NOM_PARADA || 'No name');
+                }
+            }).addTo(map);
+        }
+
+        // Example function to fetch real-time data from TMB API (adapt as needed)
+        async function fetchTmbData() {
+            const appId = 'YOUR_TMB_APP_ID'; //YOUR_TMB_APP_ID
+            const appKey = 'YOUR_TMB_APP_KEY';//YOUR_TMB_APP_KEY
+            const url = `https://api.tmb.cat/v1/ibus/stops/your_stop_id?app_id=${appId}&app_key=${appKey}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                console.log(data); // Process and use this data as needed
+            } catch (error) {
+                console.error('Error fetching TMB API data:', error);
+            }
+        }
+
+        loadStaticData('realBuslineStops.json');
+
+        // Uncomment to fetch real-time data from TMB API (ensure you have valid app ID and key)
+        fetchTmbData();
+    </script>
+</body>
+</html>

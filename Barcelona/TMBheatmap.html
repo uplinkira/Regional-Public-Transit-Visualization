@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bus Stops Heatmap</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        #map { height: 100vh; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <!-- Leaflet Heatmap library -->
+    <script src="https://cdn.jsdelivr.net/gh/Leaflet/Leaflet.heat/dist/leaflet-heat.js"></script>
+    <script>
+        var map = L.map('map').setView([41.3851, 2.1734], 13); // Barcelona coordinates
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        async function loadHeatmapData(filePath) {
+            const response = await fetch(filePath);
+            const data = await response.json();
+            const geoJsonLayer = L.geoJSON(data);
+
+            var heatMapData = [];
+            geoJsonLayer.eachLayer(function (layer) {
+                var lat = layer.feature.geometry.coordinates[1];
+                var lng = layer.feature.geometry.coordinates[0];
+                var count = 1; // Assuming each stop contributes equally, else adjust count as needed
+                heatMapData.push([lat, lng, count]);
+            });
+
+            L.heatLayer(heatMapData, {
+                radius: 25,
+                blur: 15,
+                maxZoom: 17,
+                gradient: {0.4: 'blue', 0.6: 'lime', 0.8: 'red'} // Customize color gradient as needed
+            }).addTo(map);
+        }
+
+        loadHeatmapData('realBuslineStops.json'); // Ensure your data file path is correct
+    </script>
+</body>
+</html>
